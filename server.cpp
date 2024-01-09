@@ -23,6 +23,25 @@ static void msg(const char *msg) {
   fprintf(stderr, "%s\n", msg);
 }
 
+
+//set_file_descriptor_nonblocking
+static void fd_set_nb(int fd) {
+  errno = 0;
+  int flags = fnctl(fd, F_GETFL, 0);
+  if (errno) {
+    die ("fcntl error");
+    return;
+  }
+
+  flags |= O_NONBLOCK;
+
+  errno = 0;
+  (void) fcntl(fd, F_SETFL, flags);
+  if (errno) {
+    die("fcntl error");
+  }
+}
+
 static int32_t read_full(int fd, char *buf, size_t n) {
   while (n>0) {
     ssize_t rv = read(fd, buf, n);
