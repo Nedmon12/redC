@@ -155,22 +155,37 @@ int main() {
   if (rv) {
     die("connect");
   }
+
+  //multiple pipelined requests 
+  const char *query_list[3] = {"hellosirr", "hello2", "hello3"};
+  for (size_t i =0; i < 3 ; ++i) {
+    int32_t err = send_req(fd, query_list[i]);
+    if (err) {
+      goto L_DONE;
+    }
+  }
+  for (size_t i =0; i<3; ++i) {
+    int32_t err = read_res(fd);
+    if (err) {
+      goto L_DONE;
+    }
+  }
   
   //multiple requests
   //
-  int32_t err = query(fd, "first hello");
-  if (err) {
-    goto L_DONE; }
+  //int32_t err = query(fd, "first hello");
+  //if (err) {
+  //  goto L_DONE; }
 
-  err = query(fd, "second hello");
-  if (err) {
-    goto L_DONE; 
-  }
+  //err = query(fd, "second hello");
+  //if (err) {
+  //  goto L_DONE; 
+  //}
 
-  err = query(fd, "third hello");
-  if (err) {
-    goto L_DONE; 
-  }
+  //err = query(fd, "third hello");
+  //if (err) {
+  //  goto L_DONE; 
+  //}
 
 
 L_DONE:
